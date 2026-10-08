@@ -19,7 +19,8 @@ Site estático, sem build. Abre-se `index.html` num servidor local.
 | `api/contact.js` | Função serverless da Vercel: recebe o formulário de dúvidas e envia-o por email via Resend |
 | `api/report.js` | Função serverless da Vercel: envia o relatório PDF por email à pessoa, como anexo |
 | `api/_resend.js` | Utilitários partilhados pelas duas funções (validação, envio pelo Resend). O `_` impede que vire rota |
-| `assets/` | Wordmark LayerX, fundo prism (vertical e horizontal) e fundo matte do Deck Kit |
+| `assets/` | Wordmark LayerX, fundo prism (vertical e horizontal), fundo matte do Deck Kit e imagem de partilha `og.jpg` |
+| `assets/icons/`, `favicon.ico`, `site.webmanifest` | Ícone do AI Mirror (radar dividido) em 16 a 512 px, ícone iOS e manifest. Original em `assets/icons/ai-mirror-logo.png` |
 
 Dependência externa no browser: jsPDF 2.5.1 (cdnjs). Fontes: Inter e JetBrains Mono (Google Fonts).
 
@@ -102,6 +103,6 @@ Segue o branding LayerX (dark-first):
 - [ ] Criar `api/lead.js` (função serverless) que recebe o POST e cria ou atualiza o contacto no HubSpot, com score e arquétipo em propriedades personalizadas; definir `LEAD_ENDPOINT="/api/lead"`.
 - [x] Enviar o PDF também por email (`api/report.js`).
 - [ ] Limitar envios por IP em `api/report.js` e `api/contact.js` (por exemplo com a Vercel Firewall), se aparecer abuso.
-- [ ] Meta tags Open Graph e imagem de partilha.
+- [x] Meta tags Open Graph e imagem de partilha (`assets/og.jpg`, 1200×630, em PT). Os URLs nas meta tags são absolutos e apontam para `ai-mirror-blue.vercel.app`: atualizar quando houver domínio próprio.
 - [ ] Analytics do funil: início, conclusão das perguntas, email submetido, PDF descarregado.
 - [ ] Rever com a equipa de AI Consulting os textos das recomendações e os perfis de referência.
