@@ -103,6 +103,6 @@ Segue o branding LayerX (dark-first):
 - [ ] Criar `api/lead.js` (função serverless) que recebe o POST e cria ou atualiza o contacto no HubSpot, com score e arquétipo em propriedades personalizadas; definir `LEAD_ENDPOINT="/api/lead"`.
 - [x] Enviar o PDF também por email (`api/report.js`).
 - [ ] Limitar envios por IP em `api/report.js` e `api/contact.js` (por exemplo com a Vercel Firewall), se aparecer abuso.
-- [x] Meta tags Open Graph e imagem de partilha (`assets/og.jpg`, 1200×630, em PT). Os URLs nas meta tags são absolutos e apontam para `ai-mirror-blue.vercel.app`: atualizar quando houver domínio próprio.
+- [x] Meta tags Open Graph e imagem de partilha (`assets/og.jpg`, 1200×630, em PT). Os URLs nas meta tags são absolutos e apontam para `ai-mirror-lx.vercel.app`: atualizar quando houver domínio próprio.
 - [ ] Analytics do funil: início, conclusão das perguntas, email submetido, PDF descarregado.
 - [ ] Rever com a equipa de AI Consulting os textos das recomendações e os perfis de referência.
