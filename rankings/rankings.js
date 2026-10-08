@@ -26,7 +26,7 @@ pt:{
   cols:["#","Empresa","Setor","Coorte","Score AIDE"],
   searchPh:"Empresa ou ticker",
   strategic:"Intenção estratégica",operational:"Integração operacional",
-  source:'Fonte: <a href="https://aideinstitute.com/rankings" target="_blank" rel="noopener">AIDE Index 2026</a>, AI-Driven Enterprise Institute. Publicado com autorização. Score de 0 a 100, normalizado dentro do S&P 500; empatados partilham a posição. Metodologia completa em <a href="https://aideinstitute.com/methodology" target="_blank" rel="noopener">aideinstitute.com</a>.',
+  source:'Fonte: <a href="https://aideinstitute.com/rankings" target="_blank" rel="noopener">AIDE Index 2026</a>, AI-Driven Enterprise Institute. Score de 0 a 100, normalizado dentro do S&P 500; empatados partilham a posição. Metodologia completa em <a href="https://aideinstitute.com/methodology" target="_blank" rel="noopener">aideinstitute.com</a>.',
   sectors:{"information-technology":"Tecnologias de informação","health-care":"Saúde","financials":"Financeiro","industrials":"Indústria","utilities":"Utilities","consumer-staples":"Bens de consumo básico","consumer-discretionary":"Consumo discricionário","energy":"Energia","materials":"Materiais","communication-services":"Serviços de comunicação","real-estate":"Imobiliário"},
  },
  countries:{
@@ -72,7 +72,7 @@ en:{
   cols:["#","Company","Sector","Cohort","AIDE score"],
   searchPh:"Company or ticker",
   strategic:"Strategic intent",operational:"Operational integration",
-  source:'Source: <a href="https://aideinstitute.com/rankings" target="_blank" rel="noopener">AIDE Index 2026</a>, AI-Driven Enterprise Institute. Published with permission. Score from 0 to 100, normalised within the S&P 500; ties share a position. Full methodology at <a href="https://aideinstitute.com/methodology" target="_blank" rel="noopener">aideinstitute.com</a>.',
+  source:'Source: <a href="https://aideinstitute.com/rankings" target="_blank" rel="noopener">AIDE Index 2026</a>, AI-Driven Enterprise Institute. Score from 0 to 100, normalised within the S&P 500; ties share a position. Full methodology at <a href="https://aideinstitute.com/methodology" target="_blank" rel="noopener">aideinstitute.com</a>.',
   sectors:{"information-technology":"Information technology","health-care":"Health care","financials":"Financials","industrials":"Industrials","utilities":"Utilities","consumer-staples":"Consumer staples","consumer-discretionary":"Consumer discretionary","energy":"Energy","materials":"Materials","communication-services":"Communication services","real-estate":"Real estate"},
  },
  countries:{
