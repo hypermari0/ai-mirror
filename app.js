@@ -465,8 +465,11 @@ async function drawReport(r){
   if(meta)T(c,meta,P,336,F(400,22),C.fg2);
   // score block
   panelC(c,P,390,W-P*2,470);
-  radarC(c,r,P+250,625,150);
-  const sx=P+520;
+  // O radar ocupa a coluna da esquerda e encolhe até os rótulos dos eixos (que mudam de largura com a língua) caberem na caixa.
+  const sx=P+540,rx0=P+32,rx1=sx-32,half=(rx1-rx0)/2;
+  c.font=F(600,17);
+  const rR=Math.min(150,...AXES.map((ax,i)=>{const cs=Math.abs(Math.cos(-Math.PI/2+i*Math.PI/4));return cs<.2?Infinity:(half-c.measureText(ax.name).width)/cs-26;}));
+  radarC(c,r,rx0+half,625,Math.floor(rR));
   T(c,L.ui.pdfIndex,sx,470,F(600,18),C.fg2,"left",4);
   c.font=F(700,150);const tw=c.measureText(String(r.total)).width;
   const g1=grad(c,sx,tw+90);T(c,String(r.total),sx,610,F(700,150),g1,"left",-4);T(c,"%",sx+tw+6,610,F(700,80),g1);
