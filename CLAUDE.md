@@ -16,6 +16,9 @@ Site estático, sem build. Abre-se `index.html` num servidor local.
 | `styles.css` | Tokens de cor e tipografia, ecrãs e cartão |
 | `data.js` | Configuração (`CAL_URL`, `LEAD_ENDPOINT`, `CONTACT_ENDPOINT`, `CONTACT_EMAIL`), estrutura comum às línguas (chaves dos eixos e setores, metadados das perguntas, vetores dos perfis) e `STR.pt` / `STR.en` com todo o texto |
 | `app.js` | Língua (`setLang()`), estado, scoring, ecrãs, cartão, captura de leads, formulário de contacto e geração do PDF |
+| `rankings/empresas.html`, `rankings/paises.html`, `rankings/rankings.js` | Páginas de rankings (URLs `/rankings/empresas` e `/rankings/paises` graças a `cleanUrls` no `vercel.json`). Textos PT/EN em `R_STR` dentro de `rankings.js` |
+| `data/aide-2026.js` | AIDE Index 2026: 500 empresas do S&P 500 e medianas dos 11 setores |
+| `data/ai-diffusion-2026q2.js` | Microsoft AI Diffusion Report: 147 economias, H1 2025 a Q2 2026, por código ISO |
 | `api/contact.js` | Função serverless da Vercel: recebe o formulário de dúvidas e envia-o por email via Resend |
 | `api/report.js` | Função serverless da Vercel: envia o relatório PDF por email à pessoa, como anexo |
 | `api/_resend.js` | Utilitários partilhados pelas duas funções (validação, envio pelo Resend). O `_` impede que vire rota |
@@ -42,6 +45,13 @@ Dependência externa no browser: jsPDF 2.5.1 (cdnjs). Fontes: Inter e JetBrains 
 - `setLang()` reconstrói `AXES`, `Q`, `ARCH`, `BANDS` e `LEVELS` a partir de `STR[lang]`. Mudar de língua no resultado recalcula-o sem perder respostas nem o desbloqueio do PDF.
 - As respostas guardam índices, não textos, por isso funcionam nas duas línguas. Setores e perfis de setor ligam-se por `SECTOR_KEYS`.
 - O PDF sai na língua ativa.
+
+## Rankings
+
+- **Empresas**: AIDE Index 2026 do AI-Driven Enterprise Institute (aideinstitute.com). Os termos do site proíbem reutilizar os dados; a LayerX tem **autorização do AIDE Institute** (obtida pelo Mário, outubro de 2026) para os publicar aqui, com a fonte sempre visível. Não usar estes dados fora do AI Mirror sem nova autorização. Coortes do AIDE: Trailblazer (estratégia e execução altas), Visionary (estratégia à frente), Stealth (execução à frente), Emerging Adopters. Mantêm-se os nomes originais em inglês.
+- **Países**: Microsoft AI Diffusion Report (percentagem da população dos 15 aos 64 anos que usa IA generativa), dados do GitHub `microsoft/ai-diffusion-report` com licença MIT. Os nomes dos países vêm de `Intl.DisplayNames` a partir do código ISO, por isso saem na língua ativa. `DIFFUSION_WORLD` (média mundial) vem do texto do relatório, não do CSV.
+- **Atualizar**: quando sair um trimestre novo da Microsoft, juntar a coluna ao CSV, refazer `data/ai-diffusion-*.js` (ordenado pelo último período) e mudar o período nos textos de `R_STR`. Para uma nova edição do AIDE, pedir os dados ao AIDE Institute.
+- O cabeçalho (logo, navegação AI Mirror · Empresas · Países, seletor de língua) é igual nas três páginas; ao mudá-lo, mudar nos três HTML. A intro do diagnóstico tem dois cartões com links para os rankings.
 
 ## Scoring
 

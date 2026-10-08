@@ -12,6 +12,8 @@ function setLang(l){
   const md=document.querySelector('meta[name="description"]');if(md)md.content=L.metaDesc;
   document.querySelectorAll(".lang button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===lang));
   const g=document.querySelector(".lang");if(g)g.setAttribute("aria-label",L.ui.langLabel);
+  document.querySelectorAll("[data-nav]").forEach(a=>{a.querySelector("span").textContent=L.ui.nav[a.dataset.nav];});
+  const nav=document.querySelector(".nav");if(nav)nav.setAttribute("aria-label",L.ui.navLabel);
   try{localStorage.setItem("lang",lang);}catch(_){}
 }
 function initialLang(){
@@ -122,6 +124,11 @@ function renderIntro(){
       ${AXES.map((a,i)=>`<div class="row"><span class="nm">${a.name}<small>${a.desc}</small></span>
         <span class="bar"><i style="width:${demo[i]}%"></i></span></div>`).join("")}
     </aside>
+  </section>
+  <section class="home-rk" aria-labelledby="homerk">
+    <h2 id="homerk" class="eyebrow">${L.ui.rankingsTitle}</h2>
+    <div class="home-rk-grid">${L.ui.rankings.map(([href,kick,title,text])=>`<a class="panel home-rk-card" href="${href}">
+      <span class="eyebrow" style="color:var(--lilac)">${kick}</span><b>${title}</b><span class="t">${text}</span><span class="go">${L.ui.rankingsLink}</span></a>`).join("")}</div>
   </section>`;
   const inp=document.getElementById("empresa");
   inp.oninput=()=>{state.empresa=inp.value;};
