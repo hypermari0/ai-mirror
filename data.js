@@ -7,6 +7,8 @@ const LEAD_ENDPOINT="";
 // Formulário de dúvidas: função serverless em api/contact.js, que envia a mensagem para CONTACT_EMAIL.
 const CONTACT_ENDPOINT="/api/contact";
 const CONTACT_EMAIL="hello@layerx.xyz";
+// Envio do relatório PDF por email depois de a pessoa deixar o email: função serverless em api/report.js.
+const REPORT_ENDPOINT="/api/report";
 const LANGS=["pt","en"];
 
 /* ===== Estrutura comum às duas línguas ===== */
@@ -87,13 +89,16 @@ pt:{
   name:"Nome",namePh:"O teu nome",workEmail:"Email de trabalho",emailPh:"nome@empresa.pt",
   optin:"Quero receber conteúdos da LayerX sobre adoção de IA.",
   getReport:"Receber o relatório",preparing:"A preparar o relatório…",
-  fine:"A LayerX guarda o teu email e o resultado do diagnóstico para te enviar o relatório e, se aceitares, conteúdos sobre IA.",
+  fine:"Recebes o relatório aqui e por email. A LayerX guarda o teu email e o resultado do diagnóstico para te enviar o relatório e, se aceitares, conteúdos sobre IA.",
   badEmail:"Escreve um email válido, por exemplo nome@empresa.pt.",
   generating:"A gerar o relatório…",genFail:"Não foi possível gerar o relatório. Tenta de novo.",
   downloaded:"Relatório descarregado.",noDownloads:"Neste ecrã não é possível descarregar ficheiros. O relatório fica aqui em baixo.",
   saved:"Relatório guardado.",dlCancelled:"Download cancelado.",dlBusy:"Já há um download a decorrer. Tenta de novo daqui a pouco.",
   dlFail:"Não foi possível descarregar aqui. O relatório fica aqui em baixo.",pageAlt:i=>`Relatório, página ${i}`,
   fileName:s=>`relatorio-ai-mirror-${s}.pdf`,slugFallback:"empresa",
+  mail_sending:e=>`A enviar o relatório também para ${e}…`,
+  mail_sent:e=>`Enviámos também o relatório para ${e}.`,
+  mail_failed:()=>"Não foi possível enviar o relatório por email. Podes descarregá-lo aqui.",
   contactTitle:"Tens alguma dúvida?",
   contactP:"Escreve-nos sobre o diagnóstico, o relatório ou a tua situação. A equipa da LayerX responde por email.",
   message:"Mensagem",messagePh:"Em que te podemos ajudar?",send:"Enviar mensagem",sending:"A enviar…",
@@ -226,13 +231,16 @@ en:{
   name:"Name",namePh:"Your name",workEmail:"Work email",emailPh:"name@company.com",
   optin:"I'd like to receive LayerX content on AI adoption.",
   getReport:"Get the report",preparing:"Preparing your report…",
-  fine:"LayerX stores your email and assessment result to send you the report and, if you agree, content about AI.",
+  fine:"You get the report here and by email. LayerX stores your email and assessment result to send you the report and, if you agree, content about AI.",
   badEmail:"Enter a valid email, for example name@company.com.",
   generating:"Generating your report…",genFail:"The report could not be generated. Please try again.",
   downloaded:"Report downloaded.",noDownloads:"Files can't be downloaded on this screen. The report is shown below.",
   saved:"Report saved.",dlCancelled:"Download cancelled.",dlBusy:"A download is already in progress. Try again in a moment.",
   dlFail:"The report couldn't be downloaded here. It is shown below.",pageAlt:i=>`Report, page ${i}`,
   fileName:s=>`ai-mirror-report-${s}.pdf`,slugFallback:"company",
+  mail_sending:e=>`Also sending the report to ${e}…`,
+  mail_sent:e=>`We've also sent the report to ${e}.`,
+  mail_failed:()=>"We couldn't email the report. You can download it here.",
   contactTitle:"Any questions?",
   contactP:"Write to us about the assessment, the report or your situation. The LayerX team will reply by email.",
   message:"Message",messagePh:"How can we help?",send:"Send message",sending:"Sending…",

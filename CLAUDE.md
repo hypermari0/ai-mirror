@@ -17,6 +17,8 @@ Site estático, sem build. Abre-se `index.html` num servidor local.
 | `data.js` | Configuração (`CAL_URL`, `LEAD_ENDPOINT`, `CONTACT_ENDPOINT`, `CONTACT_EMAIL`), estrutura comum às línguas (chaves dos eixos e setores, metadados das perguntas, vetores dos perfis) e `STR.pt` / `STR.en` com todo o texto |
 | `app.js` | Língua (`setLang()`), estado, scoring, ecrãs, cartão, captura de leads, formulário de contacto e geração do PDF |
 | `api/contact.js` | Função serverless da Vercel: recebe o formulário de dúvidas e envia-o por email via Resend |
+| `api/report.js` | Função serverless da Vercel: envia o relatório PDF por email à pessoa, como anexo |
+| `api/_resend.js` | Utilitários partilhados pelas duas funções (validação, envio pelo Resend). O `_` impede que vire rota |
 | `assets/` | Wordmark LayerX, fundo prism (vertical e horizontal) e fundo matte do Deck Kit |
 
 Dependência externa no browser: jsPDF 2.5.1 (cdnjs). Fontes: Inter e JetBrains Mono (Google Fonts).
@@ -29,7 +31,7 @@ Dependência externa no browser: jsPDF 2.5.1 (cdnjs). Fontes: Inter e JetBrains 
    - 16 pontuadas, 2 por eixo.
    - 1 bónus ("Se a IA desaparecesse amanhã…"), que conta para Adoção.
 3. **Resultado**: cartão em HTML (para print) e painel do relatório bloqueado.
-4. **Email**: desbloqueia o PDF. O cartão nunca fica atrás do email; a informação reservada (recomendações, benchmark de setor, plano de 90 dias) só existe no PDF.
+4. **Email**: desbloqueia o PDF para descarregar e, em segundo plano, envia-o também para o email da pessoa (`emailReport()`): o browser gera o PDF e faz POST para `/api/report`. O painel mostra "a enviar", "enviado" ou "falhou". O cartão nunca fica atrás do email; a informação reservada (recomendações, benchmark de setor, plano de 90 dias) só existe no PDF.
 5. **Dúvidas**: no fim do ecrã de resultado há um formulário (nome, email, mensagem) que faz POST para `/api/contact`. Se a pessoa já deu o email, os campos vêm preenchidos.
 
 ## Línguas
@@ -66,12 +68,16 @@ Dependência externa no browser: jsPDF 2.5.1 (cdnjs). Fontes: Inter e JetBrains 
 - se `LEAD_ENDPOINT` estiver definido, faz POST JSON para lá;
 - se estiver a correr como artifact no claude.ai, guarda também em `leads/{userId}` na base de dados do artifact (este ramo é ignorado fora do claude.ai).
 
-## Contacto
+## Emails (Resend)
+
+O PDF é gerado no browser, por isso `api/report.js` recebe-o em base64 (cerca de 1 MB; limite da Vercel 4,5 MB). Só aceita ficheiros que comecem por `%PDF-` e com menos de 3 MB, e o texto do email é fixo (só nome, empresa, arquétipo e score variam), para a função não servir para enviar outra coisa. As respostas a esse email vão para `CONTACT_TO`. `ensurePDF()` partilha a mesma geração entre o envio e o botão de download.
 
 `api/contact.js` valida o pedido, ignora bots (campo escondido `website`) e envia o email pela API do Resend com `reply_to` igual ao email da pessoa, para se responder diretamente. Inclui o contexto do diagnóstico (empresa, setor, score, arquétipo, nível). Variáveis de ambiente na Vercel:
 - `RESEND_API_KEY` (obrigatória; sem ela a função responde 503 e a página mostra o erro com o endereço `hello@layerx.xyz`);
 - `CONTACT_TO` (por omissão `hello@layerx.xyz`);
 - `CONTACT_FROM` (por omissão `AI Mirror <ai-mirror@layerx.xyz>`; o domínio tem de estar verificado no Resend).
+
+As duas funções usam as mesmas variáveis. Mudar uma variável só tem efeito no deploy seguinte.
 
 ## PDF
 
@@ -91,9 +97,10 @@ Segue o branding LayerX (dark-first):
 ## Próximos passos
 
 - [x] Publicar na Vercel (projeto `hypermario/ai-mirror`, ligado ao GitHub: cada push para `main` vai para produção).
-- [ ] Configurar o Resend (verificar o domínio `layerx.xyz`) e definir `RESEND_API_KEY` na Vercel para o formulário de dúvidas funcionar.
+- [x] Configurar o Resend e definir `RESEND_API_KEY` na Vercel.
 - [ ] Criar `api/lead.js` (função serverless) que recebe o POST e cria ou atualiza o contacto no HubSpot, com score e arquétipo em propriedades personalizadas; definir `LEAD_ENDPOINT="/api/lead"`.
-- [ ] Enviar o PDF também por email (Resend, já usado no contacto, ou HubSpot), para o lead receber o relatório na caixa de correio.
+- [x] Enviar o PDF também por email (`api/report.js`).
+- [ ] Limitar envios por IP em `api/report.js` e `api/contact.js` (por exemplo com a Vercel Firewall), se aparecer abuso.
 - [ ] Meta tags Open Graph e imagem de partilha.
 - [ ] Analytics do funil: início, conclusão das perguntas, email submetido, PDF descarregado.
 - [ ] Rever com a equipa de AI Consulting os textos das recomendações e os perfis de referência.

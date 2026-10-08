@@ -21,7 +21,7 @@ function initialLang(){
 }
 setLang(initialLang());
 
-const state={step:-1,answers:Array(Q.length).fill(null),empresa:"",result:null,unlocked:false,lead:null,pdfBlob:null,pages:null};
+const state={step:-1,answers:Array(Q.length).fill(null),empresa:"",result:null,unlocked:false,lead:null,mail:null,pdfBlob:null,pages:null};
 const app=document.getElementById("app");
 document.querySelectorAll(".lang button").forEach(b=>b.onclick=()=>{
   if(b.dataset.l===lang)return;
@@ -204,7 +204,7 @@ function showResult(){
       <div class="panel contact" id="contact"></div>
     </div>
   </section>`;
-  document.getElementById("redo").onclick=()=>{state.step=-1;state.answers.fill(null);state.result=null;state.unlocked=false;render();};
+  document.getElementById("redo").onclick=()=>{state.step=-1;state.answers.fill(null);state.result=null;state.unlocked=false;state.mail=null;render();};
   renderReportPanel();
   renderContact();
   window.scrollTo({top:0});
@@ -220,7 +220,9 @@ function renderReportPanel(){
   if(state.unlocked){
     g.innerHTML=`<h3>${L.ui.reportReady}</h3><p>${L.ui.reportReadyP(esc(state.empresa||L.ui.yourCompany))}</p>${list}
       <div style="margin-top:18px"><button class="btn" id="dlpdf">${L.ui.download}</button></div>
-      <div class="toast" id="toast" role="status"></div><div class="pages" id="pages"></div>`;
+      <div class="toast" id="toast" role="status"></div>
+      ${state.mail?`<div class="toast mailst" role="status">${L.ui["mail_"+state.mail](esc(state.lead.email))}</div>`:""}
+      <div class="pages" id="pages"></div>`;
     document.getElementById("dlpdf").onclick=downloadPDF;
     return;
   }
@@ -248,8 +250,25 @@ function renderReportPanel(){
     const b=document.getElementById("lsub");b.disabled=true;b.textContent=L.ui.preparing;
     const nome=document.getElementById("lnome").value.trim();
     await saveLead({email,nome,marketing:document.getElementById("lmkt").checked});
-    state.lead={email,nome};state.unlocked=true;renderReportPanel();renderContact();
+    state.lead={email,nome};state.unlocked=true;state.mail="sending";renderReportPanel();renderContact();
+    emailReport();
   });
+}
+
+/* ---------- Relatório por email ---------- */
+// Gera o PDF no browser e envia-o para api/report.js, que o manda por email como anexo.
+async function emailReport(){
+  const setMail=m=>{state.mail=m;if(state.unlocked&&document.getElementById("report"))renderReportPanel();};
+  try{
+    const blob=await ensurePDF();
+    const pdf=await new Promise((ok,ko)=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result).split(",")[1]);fr.onerror=ko;fr.readAsDataURL(blob);});
+    const r=state.result;
+    const res=await fetch(REPORT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+      email:state.lead.email,nome:state.lead.nome,lingua:lang,empresa:state.empresa,arquetipo:ARCH[r.arch].name,score:r.total,
+      filename:L.ui.fileName(slug(state.empresa)),pdf})});
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    setMail("sent");
+  }catch(e){console.warn("report not emailed",e);setMail("failed");}
 }
 
 /* ---------- Contacto ---------- */
@@ -311,15 +330,24 @@ async function saveLead(lead){
 
 /* ---------- PDF ---------- */
 function slug(s){return (s||L.ui.slugFallback).normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||L.ui.slugFallback;}
-async function ensurePDF(){
-  if(state.pdfBlob)return;
-  await Promise.all(["700 60px Inter","600 30px Inter","500 30px Inter","400 30px Inter","500 20px 'JetBrains Mono'"].map(f=>document.fonts.load(f))).catch(()=>{});
-  const pages=await drawReport(state.result);
-  state.pages=pages.map(p=>p.toDataURL("image/jpeg",0.9));
-  const {jsPDF}=window.jspdf;
-  const pdf=new jsPDF({unit:"pt",format:[1240,1754],compress:true});
-  state.pages.forEach((u,i)=>{if(i)pdf.addPage([1240,1754],"portrait");pdf.addImage(u,"JPEG",0,0,1240,1754);});
-  state.pdfBlob=pdf.output("blob");
+// Uma só geração por resultado: o envio por email e o botão de download partilham o mesmo PDF.
+let pdfJob=null;
+function ensurePDF(){
+  if(state.pdfBlob)return Promise.resolve(state.pdfBlob);
+  const result=state.result;
+  if(pdfJob&&pdfJob.result===result)return pdfJob.p;
+  const p=(async()=>{
+    await Promise.all(["700 60px Inter","600 30px Inter","500 30px Inter","400 30px Inter","500 20px 'JetBrains Mono'"].map(f=>document.fonts.load(f))).catch(()=>{});
+    const pages=(await drawReport(result)).map(p=>p.toDataURL("image/jpeg",0.9));
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({unit:"pt",format:[1240,1754],compress:true});
+    pages.forEach((u,i)=>{if(i)pdf.addPage([1240,1754],"portrait");pdf.addImage(u,"JPEG",0,0,1240,1754);});
+    const blob=pdf.output("blob");
+    if(state.result===result){state.pages=pages;state.pdfBlob=blob;}
+    return blob;
+  })();
+  pdfJob={result,p};p.catch(()=>{if(pdfJob&&pdfJob.p===p)pdfJob=null;});
+  return p;
 }
 async function downloadPDF(){
   const t=document.getElementById("toast"),b=document.getElementById("dlpdf");
