@@ -32,7 +32,8 @@ Dependência externa no browser: jsPDF 2.5.1 (cdnjs). Fontes: Inter e JetBrains 
    - 1 bónus ("Se a IA desaparecesse amanhã…"), que conta para Adoção.
 3. **Resultado**: cartão em HTML (para print) e painel do relatório bloqueado.
 4. **Email**: desbloqueia o PDF para descarregar e, em segundo plano, envia-o também para o email da pessoa (`emailReport()`): o browser gera o PDF e faz POST para `/api/report`. O painel mostra "a enviar", "enviado" ou "falhou". O cartão nunca fica atrás do email; a informação reservada (recomendações, benchmark de setor, plano de 90 dias) só existe no PDF.
-5. **Dúvidas**: no fim do ecrã de resultado há um formulário (nome, email, mensagem) que faz POST para `/api/contact`. Se a pessoa já deu o email, os campos vêm preenchidos.
+5. **Retomar**: as respostas, o nome da empresa e o desbloqueio do PDF ficam em `localStorage` (`ai-mirror:progress`, 30 dias). Se a pessoa voltar à página, a intro mostra um aviso para continuar onde ficou (ou ver o resultado, se já tinha terminado) ou recomeçar. "Refazer o diagnóstico" e "Recomeçar" apagam o progresso guardado. O relatório não volta a ser enviado por email ao retomar.
+6. **Dúvidas**: no fim do ecrã de resultado há um formulário (nome, email, mensagem) que faz POST para `/api/contact`. Se a pessoa já deu o email, os campos vêm preenchidos.
 
 ## Línguas
 

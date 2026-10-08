@@ -61,11 +61,51 @@ function compute(){
   return {ax,vec,total,arch,level,levelIdx,comps,secs,sorted,strong:sorted[0],weak:sorted[7],setor:prof("setor"),sectorKey,dim:prof("dim"),funcao:prof("funcao"),ownSector};
 }
 
+/* ---------- Progresso guardado ---------- */
+// As respostas ficam neste browser para a pessoa poder retomar se sair da página. Expiram ao fim de 30 dias.
+const SAVE_KEY="ai-mirror:progress",SAVE_DAYS=30;
+function saveProgress(){
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify({v:1,t:Date.now(),answers:state.answers,empresa:state.empresa,unlocked:state.unlocked,lead:state.lead}));}catch(_){}
+}
+function clearProgress(){try{localStorage.removeItem(SAVE_KEY);}catch(_){}}
+function loadProgress(){
+  try{
+    const s=JSON.parse(localStorage.getItem(SAVE_KEY));
+    if(!s||s.v!==1||Date.now()-s.t>SAVE_DAYS*864e5||!Array.isArray(s.answers)||s.answers.length!==Q.length)return null;
+    if(!s.answers.every((a,i)=>a==null||(Number.isInteger(a)&&a>=0&&a<Q[i].o.length)))return null;
+    const n=s.answers.filter(a=>a!=null).length;
+    return n?{...s,n,done:n===Q.length}:null;
+  }catch(_){return null;}
+}
+let pending=loadProgress();
+function resumeProgress(){
+  const s=pending;pending=null;
+  state.answers=s.answers.slice();state.empresa=typeof s.empresa==="string"?s.empresa:"";
+  state.unlocked=!!(s.done&&s.unlocked&&s.lead);state.lead=state.unlocked?s.lead:null;state.mail=null;state.result=null;
+  const next=state.answers.findIndex(a=>a==null);
+  state.step=next<0?Q.length:next;
+  render();
+}
+function resumeHTML(s){
+  return `<section class="panel resume" aria-labelledby="resumeh">
+    <div class="rtext">
+      <div class="eyebrow" style="color:var(--lilac)">${s.done?L.ui.resumeKickerDone:L.ui.resumeKicker}${s.empresa?` · ${esc(s.empresa)}`:""}</div>
+      <h2 id="resumeh">${s.done?L.ui.resumeTitleDone:L.ui.resumeTitle}</h2>
+      <p>${s.done?L.ui.resumeBodyDone:L.ui.resumeBody(s.n,Q.length)}</p>
+      <span class="bar"><i style="width:${Math.round(s.n/Q.length*100)}%"></i></span>
+    </div>
+    <div class="ractions">
+      <button class="btn" id="resume">${s.done?L.ui.resumeSeeResult:L.ui.resumeContinue}</button>
+      <button class="btn ghost" id="restart">${L.ui.resumeRestart}</button>
+    </div>
+  </section>`;
+}
+
 /* ---------- Intro ---------- */
 function renderIntro(){
   const demo=[72,48,35,40,55,62,20,30];
-  app.innerHTML=`
-  <section class="intro">
+  app.innerHTML=`${pending?resumeHTML(pending):""}
+  <section class="intro${pending?" has-resume":""}">
     <div>
       <div class="eyebrow">${L.ui.eyebrow}</div>
       <h1>${L.ui.h1}</h1>
@@ -85,7 +125,11 @@ function renderIntro(){
   </section>`;
   const inp=document.getElementById("empresa");
   inp.oninput=()=>{state.empresa=inp.value;};
-  document.getElementById("go").onclick=()=>{state.empresa=inp.value.trim();state.step=0;render();};
+  document.getElementById("go").onclick=()=>{pending=null;state.empresa=inp.value.trim();state.step=0;render();};
+  if(pending){
+    document.getElementById("resume").onclick=resumeProgress;
+    document.getElementById("restart").onclick=()=>{pending=null;clearProgress();renderIntro();document.getElementById("empresa").focus();};
+  }
   inp.addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("go").click();});
 }
 
@@ -204,7 +248,7 @@ function showResult(){
       <div class="panel contact" id="contact"></div>
     </div>
   </section>`;
-  document.getElementById("redo").onclick=()=>{state.step=-1;state.answers.fill(null);state.result=null;state.unlocked=false;state.mail=null;render();};
+  document.getElementById("redo").onclick=()=>{state.step=-1;state.answers.fill(null);state.result=null;state.unlocked=false;state.lead=null;state.mail=null;clearProgress();render();};
   renderReportPanel();
   renderContact();
   window.scrollTo({top:0});
@@ -250,7 +294,7 @@ function renderReportPanel(){
     const b=document.getElementById("lsub");b.disabled=true;b.textContent=L.ui.preparing;
     const nome=document.getElementById("lnome").value.trim();
     await saveLead({email,nome,marketing:document.getElementById("lmkt").checked});
-    state.lead={email,nome};state.unlocked=true;state.mail="sending";renderReportPanel();renderContact();
+    state.lead={email,nome};state.unlocked=true;state.mail="sending";saveProgress();renderReportPanel();renderContact();
     emailReport();
   });
 }
@@ -509,6 +553,7 @@ async function drawReport(r){
 }
 
 function render(){
+  if(state.step>=0)saveProgress();
   if(state.step<0)renderIntro();
   else if(state.step<Q.length)renderQuestion();
   else if(state.result)showResult();

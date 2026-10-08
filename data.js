@@ -57,6 +57,11 @@ pt:{
  metaDesc:"Diagnóstico gratuito: quão AI ready está a tua empresa? 20 perguntas, 8 eixos, o teu arquétipo e um plano de 90 dias.",
  ui:{
   langLabel:"Língua",
+  resumeKicker:"Diagnóstico em curso",resumeTitle:"Continua onde ficaste",
+  resumeBody:(n,t)=>`Respondeste a ${n} de ${t} perguntas. As respostas ficam guardadas neste browser.`,
+  resumeKickerDone:"Diagnóstico concluído",resumeTitleDone:"O teu resultado está guardado",
+  resumeBodyDone:"Respondeste a todas as perguntas. As respostas ficam guardadas neste browser.",
+  resumeContinue:"Continuar →",resumeSeeResult:"Ver resultado →",resumeRestart:"Recomeçar",
   eyebrow:"AI Mirror · Diagnóstico gratuito · LayerX",
   h1:'Quão <span class="gtext">AI ready</span> está a tua empresa?',
   lead:"20 perguntas, cerca de 4 minutos. No fim vês o perfil da tua empresa em 8 eixos, o teu arquétipo e com quem te pareces. Se quiseres, recebes também um relatório com um plano de ação.",
@@ -199,6 +204,11 @@ en:{
  metaDesc:"Free assessment: how AI ready is your company? 20 questions, 8 axes, your archetype and a 90-day plan.",
  ui:{
   langLabel:"Language",
+  resumeKicker:"Assessment in progress",resumeTitle:"Pick up where you left off",
+  resumeBody:(n,t)=>`You've answered ${n} of ${t} questions. Your answers are saved in this browser.`,
+  resumeKickerDone:"Assessment complete",resumeTitleDone:"Your result is saved",
+  resumeBodyDone:"You've answered every question. Your answers are saved in this browser.",
+  resumeContinue:"Continue →",resumeSeeResult:"See result →",resumeRestart:"Start over",
   eyebrow:"AI Mirror · Free assessment · LayerX",
   h1:'How <span class="gtext">AI ready</span> is your company?',
   lead:"20 questions, about 4 minutes. At the end you see your company's profile across 8 axes, your archetype and who you resemble. If you like, you also get a report with an action plan.",
