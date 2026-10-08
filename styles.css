@@ -19,6 +19,10 @@ header.top{display:flex;align-items:center;gap:16px}
 header.top img{height:22px;width:auto}
 header.top .rule{flex:1;height:1px;background:var(--line)}
 header.top .tag{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-2);font-weight:600}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:rgba(6,9,18,.6)}
+.lang button{border:0;background:transparent;color:var(--fg-3);font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;padding:5px 10px;border-radius:999px;transition:color .15s,background .15s}
+.lang button:hover{color:var(--fg)}
+.lang button[aria-pressed="true"]{background:rgba(150,179,255,.16);color:var(--fg)}
 .eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--peri);font-weight:600}
 h1,h2{text-wrap:balance;margin:0;font-weight:600;letter-spacing:-.02em}
 button{font:inherit;cursor:pointer}
@@ -28,9 +32,10 @@ button{font:inherit;cursor:pointer}
 .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
 .btn.ghost{background:transparent;color:var(--fg);border:1px solid rgba(255,255,255,.18)}
 .btn.ghost:hover{border-color:rgba(255,255,255,.4)}
-input[type=text],input[type=email]{width:100%;background:rgba(6,9,18,.7);border:1px solid var(--line);border-radius:12px;color:var(--fg);padding:14px 16px;font:inherit;font-size:16px}
-input:focus{border-color:var(--peri);outline:none}
-input::placeholder{color:var(--fg-3)}
+input[type=text],input[type=email],textarea{width:100%;background:rgba(6,9,18,.7);border:1px solid var(--line);border-radius:12px;color:var(--fg);padding:14px 16px;font:inherit;font-size:16px}
+input:focus,textarea:focus{border-color:var(--peri);outline:none}
+textarea{resize:vertical;min-height:110px;line-height:1.45}
+input::placeholder,textarea::placeholder{color:var(--fg-3)}
 label.lbl{display:block;font-size:13px;color:var(--fg-2);margin-bottom:8px}
 .gtext{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 
@@ -100,6 +105,7 @@ form.lead{display:grid;gap:14px;margin-top:18px}
 .pages img{width:100%;border-radius:12px;border:1px solid var(--line)}
 .cta{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
 .cta p{max-width:42ch}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
 /* Share card: everything sized in em, and 1em = 1/108 of the card width, so it scales as one unit */
 .card{container-type:inline-size;width:100%;border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.55)}

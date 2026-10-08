@@ -1,8 +1,10 @@
-# AI Ready Index · LayerX
+# AI Mirror · LayerX
 
 Diagnóstico de prontidão para IA em formato quiz, inspirado no 12axes.vercel.app. A pessoa responde a 20 perguntas, vê um cartão partilhável com o perfil da empresa em 8 eixos e, em troca do email, descarrega um relatório em PDF com plano de ação. É uma ferramenta de geração de leads para a oferta de AI Consulting da LayerX.
 
-Toda a copy é em português europeu (PT-PT). Sem travessões longos no texto: usar vírgula ou dois pontos.
+O produto chama-se **AI Mirror** (antes "AI Ready Index"). "AI Ready" continua a ser o nome da métrica (o score em %), não do produto.
+
+A copy existe em duas línguas, português europeu (PT-PT, a principal) e inglês, com um seletor PT/EN no cabeçalho. Qualquer texto novo entra nas duas. Sem travessões longos no texto: usar vírgula ou dois pontos.
 
 ## Estrutura
 
@@ -12,11 +14,12 @@ Site estático, sem build. Abre-se `index.html` num servidor local.
 |---|---|
 | `index.html` | Esqueleto da página, fontes e scripts |
 | `styles.css` | Tokens de cor e tipografia, ecrãs e cartão |
-| `data.js` | Configuração (`CAL_URL`, `LEAD_ENDPOINT`) e todo o conteúdo: eixos, perguntas, perfis de referência, arquétipos, níveis |
-| `app.js` | Estado, scoring, ecrãs, cartão, captura de leads e geração do PDF |
+| `data.js` | Configuração (`CAL_URL`, `LEAD_ENDPOINT`, `CONTACT_ENDPOINT`, `CONTACT_EMAIL`), estrutura comum às línguas (chaves dos eixos e setores, metadados das perguntas, vetores dos perfis) e `STR.pt` / `STR.en` com todo o texto |
+| `app.js` | Língua (`setLang()`), estado, scoring, ecrãs, cartão, captura de leads, formulário de contacto e geração do PDF |
+| `api/contact.js` | Função serverless da Vercel: recebe o formulário de dúvidas e envia-o por email via Resend |
 | `assets/` | Wordmark LayerX, fundo prism (vertical e horizontal) e fundo matte do Deck Kit |
 
-Dependência externa única: jsPDF 2.5.1 (cdnjs). Fontes: Inter e JetBrains Mono (Google Fonts).
+Dependência externa no browser: jsPDF 2.5.1 (cdnjs). Fontes: Inter e JetBrains Mono (Google Fonts).
 
 ## Fluxo
 
@@ -27,6 +30,14 @@ Dependência externa única: jsPDF 2.5.1 (cdnjs). Fontes: Inter e JetBrains Mono
    - 1 bónus ("Se a IA desaparecesse amanhã…"), que conta para Adoção.
 3. **Resultado**: cartão em HTML (para print) e painel do relatório bloqueado.
 4. **Email**: desbloqueia o PDF. O cartão nunca fica atrás do email; a informação reservada (recomendações, benchmark de setor, plano de 90 dias) só existe no PDF.
+5. **Dúvidas**: no fim do ecrã de resultado há um formulário (nome, email, mensagem) que faz POST para `/api/contact`. Se a pessoa já deu o email, os campos vêm preenchidos.
+
+## Línguas
+
+- Língua inicial: `?lang=pt|en` no URL, depois a escolha guardada em `localStorage`, depois a língua do browser (pt → PT, resto → EN).
+- `setLang()` reconstrói `AXES`, `Q`, `ARCH`, `BANDS` e `LEVELS` a partir de `STR[lang]`. Mudar de língua no resultado recalcula-o sem perder respostas nem o desbloqueio do PDF.
+- As respostas guardam índices, não textos, por isso funcionam nas duas línguas. Setores e perfis de setor ligam-se por `SECTOR_KEYS`.
+- O PDF sai na língua ativa.
 
 ## Scoring
 
@@ -51,15 +62,22 @@ Dependência externa única: jsPDF 2.5.1 (cdnjs). Fontes: Inter e JetBrains Mono
 
 ## Leads
 
-`saveLead()` em `app.js` monta um objeto com email, nome, opt-in de marketing, empresa, setor, dimensão, função, score, arquétipo, nível, eixos, empresa mais parecida, respostas e data. Depois:
+`saveLead()` em `app.js` monta um objeto com email, nome, opt-in de marketing, empresa, setor, dimensão, função, score, arquétipo, nível, eixos, empresa mais parecida, respostas, língua e data. Os textos vão sempre em PT, qualquer que seja a língua escolhida, para os leads serem comparáveis. Depois:
 - se `LEAD_ENDPOINT` estiver definido, faz POST JSON para lá;
 - se estiver a correr como artifact no claude.ai, guarda também em `leads/{userId}` na base de dados do artifact (este ramo é ignorado fora do claude.ai).
+
+## Contacto
+
+`api/contact.js` valida o pedido, ignora bots (campo escondido `website`) e envia o email pela API do Resend com `reply_to` igual ao email da pessoa, para se responder diretamente. Inclui o contexto do diagnóstico (empresa, setor, score, arquétipo, nível). Variáveis de ambiente na Vercel:
+- `RESEND_API_KEY` (obrigatória; sem ela a função responde 503 e a página mostra o erro com o endereço `hello@layerx.xyz`);
+- `CONTACT_TO` (por omissão `hello@layerx.xyz`);
+- `CONTACT_FROM` (por omissão `AI Mirror <ai-mirror@layerx.xyz>`; o domínio tem de estar verificado no Resend).
 
 ## PDF
 
 Gerado no browser: três páginas A4 desenhadas em `<canvas>` (1240×1754) com Inter, convertidas para JPEG e juntas com jsPDF. Funções `drawReport()` e `ensurePDF()`. Página 1: capa, índice, radar, arquétipo, risco e foco. Página 2: 8 eixos do mais fraco para o mais forte. Página 3: comparação com o setor, empresas e setores parecidos, plano de 90 dias (3 eixos mais fracos).
 
-Ao mexer em textos do PDF, confirmar que nada sai das caixas: o texto é quebrado com `wrap()` mas as alturas das caixas são calculadas à mão.
+Ao mexer em textos do PDF, confirmar nas duas línguas que nada sai das caixas: o texto é quebrado com `wrap()` mas as alturas das caixas são calculadas à mão.
 
 ## Marca
 
@@ -72,9 +90,10 @@ Segue o branding LayerX (dark-first):
 
 ## Próximos passos
 
-- [ ] Publicar na Vercel (site estático).
+- [x] Publicar na Vercel (projeto `hypermario/ai-mirror`, ligado ao GitHub: cada push para `main` vai para produção).
+- [ ] Configurar o Resend (verificar o domínio `layerx.xyz`) e definir `RESEND_API_KEY` na Vercel para o formulário de dúvidas funcionar.
 - [ ] Criar `api/lead.js` (função serverless) que recebe o POST e cria ou atualiza o contacto no HubSpot, com score e arquétipo em propriedades personalizadas; definir `LEAD_ENDPOINT="/api/lead"`.
-- [ ] Enviar o PDF também por email (Resend ou HubSpot), para o lead receber o relatório na caixa de correio.
+- [ ] Enviar o PDF também por email (Resend, já usado no contacto, ou HubSpot), para o lead receber o relatório na caixa de correio.
 - [ ] Meta tags Open Graph e imagem de partilha.
 - [ ] Analytics do funil: início, conclusão das perguntas, email submetido, PDF descarregado.
 - [ ] Rever com a equipa de AI Consulting os textos das recomendações e os perfis de referência.
