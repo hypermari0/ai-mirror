@@ -18,7 +18,7 @@ const COPY={
     sign:"Equipa LayerX",
   },
   en:{
-    subject:e=>e?`${e}'s AI Mirror report`:"Your AI Mirror report",
+    subject:e=>e?`AI Mirror report: ${e}`:"Your AI Mirror report",
     hi:n=>n?`Hi ${n},`:"Hi,",
     body:(a,s)=>`Thanks for taking the AI Mirror assessment. Attached is your full report: ${s}% AI Ready, archetype ${a}, the analysis of the 8 axes, the sector comparison and a 90-day plan.`,
     cta:"If you'd like to turn the assessment into a concrete plan, book 30 minutes with LayerX's AI Consulting team:",
