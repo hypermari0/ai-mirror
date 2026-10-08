@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#96B3FF"/><stop offset="1" stop-color="#D5BBFF"/></linearGradient>
+<radialGradient id="bg" cx=".75" cy=".85" r=".9"><stop offset="0" stop-color="#1B2550"/><stop offset="1" stop-color="#060912"/></radialGradient>
+<clipPath id="L"><rect x="0" y="0" width="400" height="800"/></clipPath>
+<clipPath id="Rc"><rect x="400" y="0" width="400" height="800"/></clipPath>
+</defs>
+<rect width="800" height="800" rx="176" fill="url(#bg)"/>
+<polygon points="400.0,317.5 458.3,341.7 482.5,400.0 458.3,458.3 400.0,482.5 341.7,458.3 317.5,400.0 341.7,341.7" fill="none" stroke="#FFFFFF" stroke-opacity=".10" stroke-width="4"/><polygon points="400.0,235.0 516.7,283.3 565.0,400.0 516.7,516.7 400.0,565.0 283.3,516.7 235.0,400.0 283.3,283.3" fill="none" stroke="#FFFFFF" stroke-opacity=".10" stroke-width="4"/><polygon points="400.0,150.0 576.8,223.2 650.0,400.0 576.8,576.8 400.0,650.0 223.2,576.8 150.0,400.0 223.2,223.2" fill="none" stroke="#FFFFFF" stroke-opacity=".10" stroke-width="4"/>
+<g clip-path="url(#L)"><polygon points="400.0,175.0 520.2,279.8 630.0,400.0 506.1,506.1 400.0,605.0 293.9,506.1 170.0,400.0 279.8,279.8" fill="url(#g)"/></g>
+<g clip-path="url(#Rc)"><polygon points="400.0,175.0 520.2,279.8 630.0,400.0 506.1,506.1 400.0,605.0 293.9,506.1 170.0,400.0 279.8,279.8" fill="#96B3FF" fill-opacity=".10" stroke="url(#g)" stroke-width="10" stroke-linejoin="round" stroke-dasharray="22 16"/></g>
+<line x1="400" y1="150" x2="400" y2="650" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+</svg>
